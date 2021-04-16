@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
 
-export default class Appstats extends Component{
+export default class AnimeTitles2021 extends Component{
   state = {
     animes: []
   }
@@ -13,18 +13,31 @@ export default class Appstats extends Component{
   }
   //[...this.state.animes,...data]
   fetchData(){
-  const query = `
+  const queryCurrentAnimes = `
   query ($id: Int, $page: Int, $perPage: Int) {
-    Page(page: $page, perPage: $perPage){
-      media(id: $id){
-          title{
-        english
-        romaji
+    Page (page: $page, perPage: $perPage) {
+      pageInfo {
+        total
+        currentPage
+        lastPage
+        hasNextPage
+        perPage
+      }
+      media (id: $id, status: RELEASING, type: ANIME, isAdult: false, 
+        popularity_greater: 8, startDate_greater: 20210000) {
+        id
+        title {
+          romaji
+          english
         }
-        genres
+        coverImage {
+          medium
+        }
+        episodes
+      }
     }
   }
-  }
+  
   `;
 
   const url = 'https://graphql.anilist.co',
@@ -35,7 +48,7 @@ export default class Appstats extends Component{
               'Accept': 'application/json',
           },
           body: JSON.stringify({
-              query: query,
+              query: queryCurrentAnimes,
           })
       };
     
@@ -53,7 +66,7 @@ export default class Appstats extends Component{
   handleData(data) {
   const anime = []
   anime.push(data.data.Page.media)
-    // console.log(anime)
+    console.log(anime)
     return anime
   }
 
@@ -61,14 +74,16 @@ export default class Appstats extends Component{
     alert('Error, check console');
     console.error(error);
   }
-  MapTitles(){
-    return this.state.animes.map(animeTitle => <h1>{animeTitle.title.english}</h1>)
-    }
-
+  RomajiTitles(){
+    return this.state.animes.map(animeTitle => <div id={animeTitle.id} src={animeTitle.coverImage.medium} >{animeTitle.title.romaji}</div>)
+  }
+  // AnimeId(){
+  //   return this.state.animes.map(animeTitle => {animeTitle.id}
+  // }
   render(){
     return(
       <div> 
-        {this.MapTitles()}
+        {this.RomajiTitles()}
       </div>)
     }
-}
+  }

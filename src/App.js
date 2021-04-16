@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import Appstats from './StatsComponent.js'
+import AnimeTitles2021 from './AnimeTitles2021'
 function App() {
   return (
     <div className="App">
@@ -9,7 +9,7 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <Appstats/>
+        <AnimeTitles2021/>
         <a
           className="App-link"
           href="https://reactjs.org"
