@@ -24,7 +24,7 @@ export default class AnimeTitles2021 extends Component{
         perPage
       }
       media (id: $id, status: RELEASING, type: ANIME, isAdult: false, 
-        popularity_greater: 8, startDate_greater: 20210000) {
+        popularity_greater: 8, startDate_greater: 20210000, countryOfOrigin: "JP", sort: POPULARITY_DESC) {
         id
         title {
           romaji
@@ -34,6 +34,10 @@ export default class AnimeTitles2021 extends Component{
           medium
         }
         episodes
+        averageScore
+        nextAiringEpisode {
+          timeUntilAiring
+          }
       }
     }
   }
@@ -66,7 +70,6 @@ export default class AnimeTitles2021 extends Component{
   handleData(data) {
   const anime = []
   anime.push(data.data.Page.media)
-    console.log(anime)
     return anime
   }
 
@@ -75,14 +78,30 @@ export default class AnimeTitles2021 extends Component{
     console.error(error);
   }
   RomajiTitles(){
-    return this.state.animes.map(animeTitle => <div id={animeTitle.id} src={animeTitle.coverImage.medium} >{animeTitle.title.romaji}</div>)
-  }
-  // AnimeId(){
-  //   return this.state.animes.map(animeTitle => {animeTitle.id}
-  // }
+    return this.state.animes.map(animeTitle => <div id={animeTitle.id} src={animeTitle.coverImage.medium} className="allTitles" >
+      {animeTitle.title.romaji}
+      <br></br>
+      <img className='titleImages' src={animeTitle.coverImage.medium}></img> 
+      <br></br>
+      {animeTitle.averageScore}/100
+      {this.countDownUntilAir()}
+      </div>)
+    }
+  countDownUntilAir(){
+    return this.state.animes.map(timer =>  { 
+        let seconds = (timer.nextAiringEpisode.timeUntilAiring);
+
+        const days = Math.floor(seconds / (3600*24));
+        seconds  -= days*3600*24;
+        const hrs  = Math.floor(seconds / 3600);
+        seconds  -= hrs*3600;
+        const mnts = Math.floor(seconds / 60);
+        seconds  -= mnts*60;
+
+       <div>{days+" days, "+hrs+" Hrs, "+mnts+" Minutes, "+seconds+" Seconds"}</div>})};
   render(){
     return(
-      <div> 
+      <div className="Titles"> 
         {this.RomajiTitles()}
       </div>)
     }
