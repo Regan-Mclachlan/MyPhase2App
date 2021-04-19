@@ -11,7 +11,7 @@ export default class LikeButton extends Component{
     render(){
         return(
             <div className='container' onClick={() => this.toggle()}>
-                {this.state.liked ===  false ? ('❤️') : ('❤')}
+                {this.state.liked ===  false ? ('❤') : ('❤️')}
             </div>
         )
     }
