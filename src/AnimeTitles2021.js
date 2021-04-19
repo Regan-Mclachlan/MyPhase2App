@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-
+import AnimeCard from './AnimeCard'
 
 export default class AnimeTitles2021 extends Component{
   state = {
@@ -9,9 +9,8 @@ export default class AnimeTitles2021 extends Component{
     this.fetchData().then(data => {
       console.log({animes: data[0]})
       this.setState({animes: data[0]})
-    })
+    });
   }
-  //[...this.state.animes,...data]
   fetchData(){
   const queryCurrentAnimes = `
   query ($id: Int, $page: Int, $perPage: Int) {
@@ -42,8 +41,7 @@ export default class AnimeTitles2021 extends Component{
     }
   }
   
-  `;
-
+`;
   const url = 'https://graphql.anilist.co',
       options = {
           method: 'POST',
@@ -77,28 +75,29 @@ export default class AnimeTitles2021 extends Component{
     alert('Error, check console');
     console.error(error);
   }
+  
+  pageNext(){
+        this.page ++
+  }
+  pagePrev(){
+        this.page --
+  }
+    
   RomajiTitles(){
-    return this.state.animes.map(animeTitle => <div id={animeTitle.id} src={animeTitle.coverImage.medium} className="allTitles" >
-      {animeTitle.title.romaji}
-      <br></br>
-      <img className='titleImages' src={animeTitle.coverImage.medium}></img> 
-      <br></br>
-      {animeTitle.averageScore}/100
-      {this.countDownUntilAir()}
-      </div>)
-    }
-  countDownUntilAir(){
-    return this.state.animes.map(timer =>  { 
-        let seconds = (timer.nextAiringEpisode.timeUntilAiring);
-
+    return this.state.animes.map(anime => <AnimeCard Anime={anime}/>)
+  }
+  countDownUntilAir(scds){
+        let seconds = (scds);
         const days = Math.floor(seconds / (3600*24));
         seconds  -= days*3600*24;
         const hrs  = Math.floor(seconds / 3600);
         seconds  -= hrs*3600;
         const mnts = Math.floor(seconds / 60);
         seconds  -= mnts*60;
+        return <div>{days+" days, "+hrs+" Hrs, "+mnts+" Minutes"}</div>
+        
+  };
 
-       <div>{days+" days, "+hrs+" Hrs, "+mnts+" Minutes, "+seconds+" Seconds"}</div>})};
   render(){
     return(
       <div className="Titles"> 
