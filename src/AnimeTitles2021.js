@@ -1,19 +1,44 @@
-import React, {Component} from 'react'
+import React, {Component, Fragment} from 'react'
 import AnimeCard from './AnimeCard'
 
+
 export default class AnimeTitles2021 extends Component{
+  // constructor(){
+  //   super()
+  //   this.state = {
+  //       animes: [],
+  //       page: 1
+  //   }
+  //   this.pageNext = () =>{
+  //     console.log('state', this)
+  //         this.setState({
+  //             ...this.state, 
+  //             page: this.state.page + 1
+  //         })
+  //         this.fetchData.then(data => {
+  //           this.setState({animes: data[0]})
+  //         })
+  //   }
+  // }
+  pageRef = React.createRef(null)
   state = {
-    animes: []
+    animes: [],
+    page: 1
   }
   componentDidMount(){
+    this.pageRef.current = 1
     this.fetchData().then(data => {
       console.log({animes: data[0]})
       this.setState({animes: data[0]})
     });
   }
-  fetchData(){
+  componentDidUpdate(PreviousProps, PreviousState){
+    console.log('previousstate', PreviousState)
+    console.log('currentState', this.state)
+  }
+  fetchData = () =>{
   const queryCurrentAnimes = `
-  query ($id: Int, $page: Int, $perPage: Int) {
+  query ($id: Int, $page: Int = ${this.pageRef.current}, $perPage: Int) {
     Page (page: $page, perPage: $perPage) {
       pageInfo {
         total
@@ -55,53 +80,62 @@ export default class AnimeTitles2021 extends Component{
       };
     
       return fetch(url, options).then(this.handleResponse)
-                              .then(this.handleData)
-                              .catch(this.handleError);
+                                .then(this.handleData)
+                                .catch(this.handleError);
   }
 
-  handleResponse(response) {
+  handleResponse = (response) => {
     return response.json().then(function (json) {
         return response.ok ? json : Promise.reject(json);
     });
   }
 
-  handleData(data) {
+  handleData = (data) => {
   const anime = []
   anime.push(data.data.Page.media)
     return anime
   }
 
-  handleError(error) {
+  handleError = (error) => {
     alert('Error, check console');
     console.error(error);
   }
   
-  pageNext(){
-        this.page ++
+  pageNext = () => {
+        this.setState({
+            ...this.state, 
+            page: this.state.page + 1
+        })
+        console.log('currentRef', this.pageRef.current)
+        this.pageRef.current = this.pageRef.current + 1
+        this.fetchData().then(data => {
+          this.setState({animes: data[0]})
+          console.log(data)
+        })
+        console.log(this.pageRef.current)
   }
-  pagePrev(){
-        this.page --
+  pagePrev = () => {
+    console.log('state prev', this.state.page)
+        this.setState({
+          ...this.state,
+          page: this.state.page - 1
+        })
   }
     
-  RomajiTitles(){
+  RomajiTitles = () => {
     return this.state.animes.map(anime => <AnimeCard Anime={anime}/>)
   }
-  countDownUntilAir(scds){
-        let seconds = (scds);
-        const days = Math.floor(seconds / (3600*24));
-        seconds  -= days*3600*24;
-        const hrs  = Math.floor(seconds / 3600);
-        seconds  -= hrs*3600;
-        const mnts = Math.floor(seconds / 60);
-        seconds  -= mnts*60;
-        return <div>{days+" days, "+hrs+" Hrs, "+mnts+" Minutes"}</div>
-        
-  };
 
   render(){
     return(
-      <div className="Titles"> 
-        {this.RomajiTitles()}
-      </div>)
+      <>
+        <div className="Titles"> 
+          {this.RomajiTitles()}
+        </div>
+        <div>
+          <button onClick={this.pagePrev}>Previous Page</button> 
+          <button onClick={this.pageNext}>Next Page</button>
+        </div>
+      </>)
     }
   }

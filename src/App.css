@@ -13,10 +13,18 @@
   grid-template-columns: auto auto auto auto auto auto;
   
 }
+#gridTitles{
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+  height: 100%;
+}
 #card{
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
+
 }
 .container{
   cursor: pointer;
